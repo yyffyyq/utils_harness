@@ -208,7 +208,7 @@ harness/
 |------|--------|------|
 | `HARNESS_QWEN_API_KEY` | `""` | Qwen3 API 密钥（必填） |
 | `HARNESS_QWEN_BASE_URL` | `https://dashscope.aliyuncs.com/compatible-mode/v1` | API 端点 |
-| `HARNESS_MODEL_NAME` | `qwen3-235b-a22b` | 模型名称 |
+| `HARNESS_MODEL_NAME` | `qwen3.6-plus` | 模型名称 |
 | `HARNESS_MAX_TOKENS` | `4096` | 单次最大 token 数 |
 | `HARNESS_TEMPERATURE` | `0.7` | 生成温度 |
 

@@ -107,7 +107,7 @@ class PlanGenerator:
             PlanError: 生成过程异常。
         """
         messages = build_plan_generation_prompt(agents_md)
-        response = self.client.chat(messages)
+        response = self.client.chat(messages, max_tokens=8192)
         if isinstance(response, dict):
             response = response.get("content", "")
         return self._parse_plan(response)

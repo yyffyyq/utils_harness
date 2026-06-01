@@ -41,7 +41,7 @@ class QwenClient:
         self.client = OpenAI(
             api_key=settings.qwen_api_key,
             base_url=settings.qwen_base_url,
-            timeout=60.0,
+            timeout=120.0,
         )
 
     def chat(

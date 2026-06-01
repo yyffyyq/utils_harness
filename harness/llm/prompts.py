@@ -74,14 +74,36 @@ AGENTS_GENERATION_PROMPT_V1: str = """\
 PLAN_GENERATION_PROMPT_V1: str = """\
 你是一名资深软件项目经理。
 
-请基于以下 AGENTS.md 内容，生成一份详细的实施计划（Markdown 格式）。
+请基于以下 AGENTS.md 内容，生成一份详细的实施计划。
+
+**重要：请严格以 JSON 格式输出，不要包含任何其他文本。**
+
+JSON 结构如下：
+{{
+  "project_name": "项目名称",
+  "overview": "计划总览描述（1-2句话）",
+  "tasks": [
+    {{
+      "id": "task-01",
+      "title": "任务标题",
+      "description": "任务详细描述",
+      "dependencies": [],
+      "deliverables": ["file1.py", "file2.py"],
+      "steps": "### 1.1 步骤一\\n说明\\n### 1.2 步骤二\\n说明",
+      "acceptance_criteria": ["标准1", "标准2"],
+      "complexity": "低"
+    }}
+  ],
+  "milestones": ["M1 里程碑描述", "M2 里程碑描述"]
+}}
 
 要求：
-- 将计划拆分为多个 task 文件（task-01、task-02 …）
-- 每个 task 包含：目标、依赖、交付物、详细步骤、验收标准
+- 将计划拆分为多个 task（task-01、task-02 …）
+- 每个 task 包含 id、title、description、dependencies、deliverables、steps、acceptance_criteria、complexity
 - task 之间有清晰的依赖关系，按实现顺序编号
-- 步骤具体到文件名、函数签名、关键代码片段
-- 验收标准可量化、可测试
+- steps 字段为 Markdown 格式文本，包含具体到文件名、函数签名的步骤
+- acceptance_criteria 为可量化、可测试的标准列表
+- complexity 取值为 "低"、"中" 或 "高"
 
 AGENTS.md 内容：
 {agents_md_content}

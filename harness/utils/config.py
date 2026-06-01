@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     qwen_base_url: str = (
         "https://dashscope.aliyuncs.com/compatible-mode/v1"
     )
-    model_name: str = "qwen3-235b-a22b"
+    model_name: str = "qwen3.7-max"
     max_tokens: int = 4096
     temperature: float = 0.7
 
