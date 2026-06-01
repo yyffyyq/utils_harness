@@ -23,3 +23,11 @@ class ConversationError(HarnessError):
 
 class ConversationMaxRoundsError(ConversationError):
     """对话轮次已达上限。"""
+
+
+class GeneratorError(HarnessError):
+    """AGENTS.md / 计划生成异常。"""
+
+
+class ValidationError(GeneratorError):
+    """生成内容校验失败。"""
