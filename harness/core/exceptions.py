@@ -15,3 +15,11 @@ class LLMResponseError(HarnessError):
 
 class LLMRateLimitError(HarnessError):
     """LLM 调用频率超限。"""
+
+
+class ConversationError(HarnessError):
+    """对话管理器异常。"""
+
+
+class ConversationMaxRoundsError(ConversationError):
+    """对话轮次已达上限。"""
