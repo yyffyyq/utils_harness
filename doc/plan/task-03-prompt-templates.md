@@ -56,6 +56,7 @@ def build_plan_generation_prompt(agents_md_content: str) -> list[dict]:
 
 ## 验收标准
 
-- [ ] 所有 Prompt 集中在 `llm/prompts.py` 中
-- [ ] Prompt 构建函数可正确组装消息列表
-- [ ] 无硬编码的 Prompt 散落在其他模块中
+- [x] 所有 Prompt 集中在 `llm/prompts.py` 中
+- [x] Prompt 构建函数可正确组装消息列表
+- [x] 无硬编码的 Prompt 散落在其他模块中
+- [x] 20 个单元测试全部通过（pytest 4.85s）
