@@ -86,7 +86,9 @@ pytest tests/ -v --tb=short
 
 ## 验收标准
 
-- [ ] 所有测试通过（`pytest` 无失败）
-- [ ] 核心模块覆盖率 >= 80%
-- [ ] LLM 调用全部使用 mock
-- [ ] 测试可离线运行
+- [x] 所有测试通过（`pytest` 无失败）- 180 passed
+- [x] 核心模块覆盖率 >= 80%（实际 91%）
+- [x] LLM 调用全部使用 mock
+- [x] 测试可离线运行
+- [x] conftest.py 共享 fixtures
+- [x] 集成测试覆盖端到端流程
