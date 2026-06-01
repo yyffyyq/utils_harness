@@ -1,0 +1,23 @@
+# {{ project_name }} 项目实施计划总览
+
+{{ overview }}
+
+## 任务清单
+
+| 序号 | 任务文件 | 描述 | 预估复杂度 |
+| ---- | -------- | ---- | ---------- |
+{% for task in tasks %}
+| {{ loop.index }} | [{{ task.title }}](./{{ task.filename }}) | {{ task.description }} | {{ task.complexity }} |
+{% endfor %}
+
+## 依赖关系
+
+```
+{{ dependency_graph }}
+```
+
+## 里程碑
+
+{% for milestone in milestones %}
+- **{{ milestone.name }}**：{{ milestone.description }}
+{% endfor %}

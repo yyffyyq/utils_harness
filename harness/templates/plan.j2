@@ -1,0 +1,31 @@
+# {{ task_id }} - {{ task_title }}
+
+## 目标
+
+{{ description }}
+
+## 依赖
+
+{% if dependencies %}
+{% for dep in dependencies %}
+- {{ dep }}
+{% endfor %}
+{% else %}
+- 无
+{% endif %}
+
+## 交付物
+
+{% for item in deliverables %}
+- `{{ item }}`
+{% endfor %}
+
+## 详细步骤
+
+{{ steps }}
+
+## 验收标准
+
+{% for criterion in acceptance_criteria %}
+- [ ] {{ criterion }}
+{% endfor %}

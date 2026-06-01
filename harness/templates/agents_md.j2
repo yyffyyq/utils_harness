@@ -1,0 +1,63 @@
+# {{ project_name }} - {{ project_description }}
+
+## 项目背景
+
+{{ background }}
+
+### 核心工作流
+
+{% for step in workflow %}
+{{ loop.index }}. {{ step }}
+{% endfor %}
+
+{% if target_users %}
+### 目标用户
+
+{% for user in target_users %}
+- {{ user }}
+{% endfor %}
+{% endif %}
+
+---
+
+## 技术栈
+
+| 类别 | 技术选型 | 说明 |
+| ---- | -------- | ---- |
+{% for tech in tech_stack %}
+| {{ tech.category }} | {{ tech.name }} | {{ tech.description }} |
+{% endfor %}
+
+{% if dependencies %}
+### 依赖清单（核心）
+
+```
+{% for dep in dependencies %}
+{{ dep }}
+{% endfor %}
+```
+{% endif %}
+
+---
+
+## 代码规范
+
+{{ code_standards }}
+
+{% if error_handling %}
+### 错误处理
+
+{{ error_handling }}
+{% endif %}
+
+{% if git_convention %}
+### Git 规范
+
+{{ git_convention }}
+{% endif %}
+
+{% if test_convention %}
+### 测试规范
+
+{{ test_convention }}
+{% endif %}
