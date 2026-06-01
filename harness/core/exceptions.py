@@ -31,3 +31,11 @@ class GeneratorError(HarnessError):
 
 class ValidationError(GeneratorError):
     """生成内容校验失败。"""
+
+
+class PlanError(HarnessError):
+    """计划生成与管理异常。"""
+
+
+class PlanParseError(PlanError):
+    """LLM 返回的计划数据解析失败。"""
