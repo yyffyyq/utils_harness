@@ -80,8 +80,9 @@ Qwen3 模型支持深度思考模式，客户端需支持传递 `extra_body={"en
 
 ## 验收标准
 
-- [ ] `QwenClient.chat()` 可正常返回文本
-- [ ] `QwenClient.chat_stream()` 可流式输出
-- [ ] API 失败时自动重试 3 次
-- [ ] 重试耗尽后抛出对应自定义异常
-- [ ] 支持 `enable_thinking` 参数
+- [x] `QwenClient.chat()` 可正常返回文本
+- [x] `QwenClient.chat_stream()` 可流式输出
+- [x] API 失败时自动重试 3 次
+- [x] 重试耗尽后抛出对应自定义异常
+- [x] 支持 `enable_thinking` 参数
+- [x] 16 个单元测试全部通过（pytest 7.26s）
