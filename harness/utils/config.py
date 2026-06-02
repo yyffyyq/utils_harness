@@ -14,6 +14,8 @@ class Settings(BaseSettings):
         model_name: 使用的模型名称。
         max_tokens: 单次请求最大 token 数。
         temperature: 生成温度，控制随机性。
+        memory_window_size: 记忆滚动窗口大小（轮数）。
+        memory_enable_facts: 是否启用结构化事实提取。
     """
 
     qwen_api_key: str = ""
@@ -23,6 +25,8 @@ class Settings(BaseSettings):
     model_name: str = "qwen3.7-max"
     max_tokens: int = 4096
     temperature: float = 0.7
+    memory_window_size: int = 4
+    memory_enable_facts: bool = True
 
     model_config = {
         "env_file": ".env",

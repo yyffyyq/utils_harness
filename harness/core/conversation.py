@@ -2,6 +2,7 @@
 
 实现对话状态管理、上下文维护与终端交互，
 协调用户输入、LLM 响应与流程控制。
+支持双层记忆架构（滚动窗口摘要 + 结构化事实提取）。
 """
 
 from enum import Enum
@@ -14,6 +15,7 @@ from harness.core.exceptions import (
     ConversationError,
     ConversationMaxRoundsError,
 )
+from harness.core.memory import ConversationMemory
 from harness.llm.client import QwenClient
 from harness.llm.prompts import build_conversation_prompt
 
@@ -71,20 +73,33 @@ class ConversationManager:
         self,
         client: QwenClient,
         max_rounds: int = 15,
+        window_size: int = 4,
+        enable_facts: bool = True,
     ) -> None:
         """初始化对话管理器。
 
         Args:
             client: Qwen3 客户端实例。
             max_rounds: 最大对话轮次，超过后强制结束收集。
+            window_size: 记忆滚动窗口大小（轮数）。
+            enable_facts: 是否启用结构化事实提取。
         """
         self.client = client
         self.max_rounds = max_rounds
         self.phase: ConversationPhase = ConversationPhase.COLLECTING
-        self.history: list[dict[str, str]] = []
+        self.memory = ConversationMemory(
+            client=client,
+            window_size=window_size,
+            enable_facts=enable_facts,
+        )
         self.round_count: int = 0
         self._should_generate: bool = False
         self._should_quit: bool = False
+
+    @property
+    def history(self) -> list[dict[str, str]]:
+        """对话历史记录（兼容旧接口，指向 memory.history）。"""
+        return self.memory.history
 
     @property
     def should_generate(self) -> bool:
@@ -146,7 +161,7 @@ class ConversationManager:
         # ---- 构建消息并调用 LLM ----
         messages = build_conversation_prompt(
             user_input=user_input,
-            history=self.history,
+            memory_messages=self.memory.get_messages_for_llm(user_input),
         )
 
         response_text = self.client.chat(messages)
@@ -154,11 +169,8 @@ class ConversationManager:
         if isinstance(response_text, dict):
             response_text = response_text.get("content", "")
 
-        # ---- 更新历史 ----
-        self.history.append({"role": "user", "content": user_input})
-        self.history.append(
-            {"role": "assistant", "content": response_text}
-        )
+        # ---- 更新记忆 ----
+        self.memory.add_turn(user_input, response_text)
         self.round_count += 1
 
         # ---- 检测 AI 是否建议生成 ----
@@ -187,7 +199,7 @@ class ConversationManager:
     def get_conversation_summary(self) -> str:
         """获取对话摘要，用于生成 AGENTS.md。
 
-        将所有对话历史按轮次格式化为可读文本。
+        使用双层记忆的分层摘要：早期摘要 + 结构化事实 + 近期对话全文。
 
         Returns:
             格式化的对话摘要字符串。
@@ -195,15 +207,10 @@ class ConversationManager:
         Raises:
             ConversationError: 对话历史为空时抛出。
         """
-        if not self.history:
+        try:
+            return self.memory.get_full_summary()
+        except ValueError:
             raise ConversationError("对话历史为空，无法生成摘要。")
-
-        lines: list[str] = []
-        for i, msg in enumerate(self.history, 1):
-            role_label = "用户" if msg["role"] == "user" else "AI"
-            lines.append(f"[{role_label}] {msg['content']}")
-
-        return "\n\n".join(lines)
 
     def render_response(self, text: str) -> None:
         """使用 Rich 将 AI 响应渲染到终端。

@@ -20,7 +20,7 @@ class TestProjectStructure:
         # .env 存在时 api_key 会被实际值覆盖，仅验证类型为 str
         assert isinstance(settings.qwen_api_key, str)
         assert "dashscope" in settings.qwen_base_url
-        assert settings.model_name == "qwen3.6-plus"
+        assert settings.model_name == "qwen3.7-max"
         assert settings.max_tokens == 4096
         assert settings.temperature == 0.7
 

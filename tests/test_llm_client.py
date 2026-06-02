@@ -19,7 +19,7 @@ def settings() -> Settings:
     return Settings(
         qwen_api_key="test-api-key",
         qwen_base_url="https://test.example.com/v1",
-        model_name="qwen3.6-plus",
+        model_name="qwen3.7-max",
         max_tokens=100,
         temperature=0.7,
     )

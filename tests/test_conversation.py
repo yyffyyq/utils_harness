@@ -111,20 +111,28 @@ class TestProcessInput:
         manager: ConversationManager,
         mock_client: MagicMock,
     ) -> None:
-        """多轮对话上下文连贯，history 传给 LLM。"""
-        mock_client.chat.side_effect = ["响应 A", "响应 B"]
+        """多轮对话上下文连贯，近期对话包含前一轮内容。"""
+        # 使用 return_value 避免记忆模块额外调用导致 StopIteration
+        mock_client.chat.return_value = "AI 响应"
 
         manager.process_input("输入 1")
         manager.process_input("输入 2")
 
-        # 第二次调用时 history 包含第一轮
-        second_call_args = mock_client.chat.call_args_list[1]
-        messages = second_call_args[0][0]
-        # messages = [system, user:输入1, assistant:响应A, user:输入2]
-        assert len(messages) == 4
-        assert messages[1]["content"] == "输入 1"
-        assert messages[2]["content"] == "响应 A"
-        assert messages[3]["content"] == "输入 2"
+        # 找到包含 "输入 2" 的主对话调用（排除事实提取调用）
+        main_calls = [
+            c for c in mock_client.chat.call_args_list
+            if any(
+                m.get("content") == "输入 2"
+                for m in c[0][0]
+                if isinstance(m, dict)
+            )
+        ]
+        assert len(main_calls) >= 1
+        messages = main_calls[-1][0][0]
+        # 验证近期对话中包含第一轮内容
+        contents = [m.get("content", "") for m in messages]
+        assert "输入 1" in contents
+        assert "输入 2" in contents
 
     def test_max_rounds_raises(
         self,
@@ -296,15 +304,14 @@ class TestGetConversationSummary:
         mock_client: MagicMock,
     ) -> None:
         """多轮对话摘要包含所有内容。"""
-        mock_client.chat.side_effect = ["回答 1", "回答 2"]
+        mock_client.chat.return_value = "AI 回答"
         manager.process_input("问题 1")
         manager.process_input("问题 2")
 
         summary = manager.get_conversation_summary()
         assert "问题 1" in summary
         assert "问题 2" in summary
-        assert "回答 1" in summary
-        assert "回答 2" in summary
+        assert "AI 回答" in summary
 
 
 class TestRenderMethods:

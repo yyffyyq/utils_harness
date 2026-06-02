@@ -22,6 +22,14 @@ def __getattr__(name: str):  # type: ignore[misc]
             if name == "ConversationManager"
             else ConversationPhase
         )
+    if name in ("ConversationMemory", "ProjectFacts"):
+        from .memory import ConversationMemory, ProjectFacts
+
+        return (
+            ConversationMemory
+            if name == "ConversationMemory"
+            else ProjectFacts
+        )
     if name == "AgentsGenerator":
         from .generator import AgentsGenerator
 
@@ -38,6 +46,8 @@ def __getattr__(name: str):  # type: ignore[misc]
 __all__ = [
     "ConversationManager",
     "ConversationPhase",
+    "ConversationMemory",
+    "ProjectFacts",
     "AgentsGenerator",
     "PlanGenerator",
     "Plan",

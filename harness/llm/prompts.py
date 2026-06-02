@@ -118,6 +118,46 @@ AGENTS_GENERATION_PROMPT: str = AGENTS_GENERATION_PROMPT_V1
 PLAN_GENERATION_PROMPT: str = PLAN_GENERATION_PROMPT_V1
 
 # ---------------------------------------------------------------------------
+# 记忆管理 Prompt（V1）
+# ---------------------------------------------------------------------------
+
+SUMMARIZE_CHUNK_PROMPT: str = """\
+请将以下对话内容压缩为简洁的摘要（200字以内），保留关键信息：
+- 用户提到的项目名称、需求、偏好
+- AI 给出的关键建议或确认
+
+对话内容：
+{chunk_text}
+
+请直接输出摘要文本，不要加任何前缀。
+"""
+
+EXTRACT_FACTS_PROMPT: str = """\
+从以下对话中提取项目关键信息。仅输出 JSON，不要其他文本。
+
+已知的信息：
+{current_facts}
+
+新的对话：
+[用户] {user_msg}
+[AI] {assistant_msg}
+
+请输出更新后的完整信息（JSON 格式）：
+{{
+  "project_name": "项目名称（如有）",
+  "background": "项目背景简述",
+  "tech_stack": ["技术1", "技术2"],
+  "code_standards": "代码规范描述",
+  "project_structure": "项目结构描述",
+  "testing_strategy": "测试策略",
+  "git_conventions": "Git规范",
+  "other_notes": "其他重要信息"
+}}
+
+如果某项在对话中未提及，保留已有值不变。未确认的字段留空字符串。tech_stack 为空数组。
+"""
+
+# ---------------------------------------------------------------------------
 # Prompt 构建函数
 # ---------------------------------------------------------------------------
 
@@ -125,15 +165,21 @@ PLAN_GENERATION_PROMPT: str = PLAN_GENERATION_PROMPT_V1
 def build_conversation_prompt(
     user_input: str,
     history: list[dict[str, str]] | None = None,
+    memory_messages: list[dict[str, str]] | None = None,
 ) -> list[dict[str, str]]:
     """构建多轮对话的消息列表。
 
     将系统提示词、历史对话与当前用户输入组装为 OpenAI 格式的消息列表。
+    支持两种模式：
+    - ``memory_messages``: 双层记忆模式（新版），包含摘要 + 事实 + 近期对话。
+    - ``history``: 全量历史模式（兼容旧版）。
 
     Args:
         user_input: 用户当前输入的文本。
-        history: 历史对话记录，每条包含 role 和 content。
+        history: 历史对话记录（旧版兼容），每条包含 role 和 content。
             为 None 或空列表时表示对话刚开始。
+        memory_messages: 双层记忆构建的消息列表（新版）。
+            优先于 history 使用。
 
     Returns:
         OpenAI 消息列表，格式为 [{"role": ..., "content": ...}, ...]。
@@ -142,10 +188,15 @@ def build_conversation_prompt(
         {"role": "system", "content": CONVERSATION_SYSTEM_PROMPT},
     ]
 
-    if history:
+    # 优先使用 memory_messages（新版双层记忆）
+    if memory_messages:
+        messages.extend(memory_messages)
+    elif history:
         messages.extend(history)
+        messages.append({"role": "user", "content": user_input})
+    else:
+        messages.append({"role": "user", "content": user_input})
 
-    messages.append({"role": "user", "content": user_input})
     return messages
 
 

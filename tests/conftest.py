@@ -15,7 +15,7 @@ def mock_settings() -> MagicMock:
     s = MagicMock()
     s.qwen_api_key = "sk-b63b3cf928d74b46a396fa050b9cb772"
     s.qwen_base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-    s.model_name = "qwen3.6-plus"
+    s.model_name = "qwen3.7-max"
     s.temperature = 0.7
     s.max_tokens = 4096
     return s
